@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 47 100% 50%; /* Gold/Yellow inspired by Uganda flag */
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 8%; /* Professional black */
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 0 84% 50%; /* Red accent from Uganda flag */
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 47 100% 50%;
+    --radius: 0.75rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 47 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 0 84% 50%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 47 100% 50%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    @apply scroll-smooth;
+  }
+  body {
+    @apply bg-background text-foreground overflow-x-hidden;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Custom professional styles */
+.gradient-hero {
+  background: linear-gradient(135deg, #FFD700 0%, #FF6B35 100%);
+}
+
+.glass-effect {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Horizontal scroll container */
+.horizontal-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(203 213 225) transparent;
+}
+
+.horizontal-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.horizontal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.horizontal-scroll::-webkit-scrollbar-thumb {
+  background: rgb(203 213 225);
+  border-radius: 3px;
+}
+
+.horizontal-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgb(148 163 184);
+}
+
+/* Navbar transition */
+.navbar-transition {
+  transition: transform 0.3s ease-in-out, background-color 0.3s ease;
+}
+
+.navbar-hidden {
+  transform: translateY(-100%);
+}
+
+/* Dark mode hero overlay */
+.dark .hero-overlay {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* Professional container max widths */
+.container {
+  max-width: 1200px;
+}
+
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1320px;
+  }
+}
