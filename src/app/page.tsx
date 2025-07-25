@@ -2,31 +2,89 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Search, Star, Menu, ChevronRight } from "lucide-react";
+import { Search, Menu, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import Link from "next/link";
+
+interface Service {
+  title: string;
+  image: string;
+  bgColor: string;
+}
+
+interface Category {
+  name: string;
+  icon: string;
+}
+
+interface CracklePro {
+  title: string;
+  description: string;
+}
+
+interface SuccessStory {
+  name: string;
+  icon: string;
+}
+
+interface PromotionalBanner {
+  title: string;
+  description: string;
+  buttonText: string;
+}
 
 export default function Home() {
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [services, setServices] = useState<Service[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [cracklePro, setCracklePro] = useState<CracklePro[]>([]);
+  const [successStory, setSuccessStory] = useState<SuccessStory[]>([]);
+  const [promotionalBanner, setPromotionalBanner] = useState<PromotionalBanner | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
         setIsNavbarVisible(false);
       } else {
         setIsNavbarVisible(true);
       }
-
       setLastScrollY(currentScrollY);
     };
 
     window.addEventListener('scroll', handleScroll);
+
+    const fetchData = async () => {
+      try {
+        const [servicesRes, categoriesRes, crackleProRes, successStoryRes, promotionalBannerRes] = await Promise.all([
+          fetch('/api/services'),
+          fetch('/api/category'),
+          fetch('/api/crackle-pro'),
+          fetch('/api/succes-story'),
+          fetch('/api/Promotional-Banner')
+        ]);
+
+        if (!servicesRes.ok || !categoriesRes.ok || !crackleProRes.ok || !successStoryRes.ok || !promotionalBannerRes.ok) {
+          throw new Error('Failed to fetch data');
+        }
+
+        setServices(await servicesRes.json());
+        setCategories(await categoriesRes.json());
+        setCracklePro(await crackleProRes.json());
+        setSuccessStory(await successStoryRes.json());
+        setPromotionalBanner(await promotionalBannerRes.json());
+      } catch (error) {
+        console.error("Fetch error:", error);
+      }
+    };
+
+    fetchData();
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
@@ -47,13 +105,13 @@ export default function Home() {
                 <Badge className="bg-red-500 text-white text-xs px-2 py-0.5">Uganda</Badge>
               </div>
               <nav className="hidden lg:flex items-center space-x-6 text-gray-600 dark:text-gray-300">
-                <div className="flex items-center space-x-1 hover:text-green-600 dark:hover:text-green-400 cursor-pointer transition-colors">
+                <Link href="/crackle-pro" className="flex items-center space-x-1 hover:text-green-600 dark:hover:text-green-400 cursor-pointer transition-colors">
                   <span>Crackla Pro</span>
-                </div>
-                <span className="hover:text-gray-900 dark:hover:text-white cursor-pointer transition-colors">Explore</span>
+                </Link>
+                <Link href="/explore" className="hover:text-gray-900 dark:hover:text-white cursor-pointer transition-colors">Explore</Link>
                 <span className="hover:text-gray-900 dark:hover:text-white cursor-pointer transition-colors">English</span>
-                <span className="hover:text-gray-900 dark:hover:text-white cursor-pointer transition-colors">Become a Seller</span>
-                <span className="hover:text-gray-900 dark:hover:text-white cursor-pointer transition-colors">Sign in</span>
+                <Link href="/become-a-seller" className="hover:text-gray-900 dark:hover:text-white cursor-pointer transition-colors">Become a Seller</Link>
+                <Link href="/signin" className="hover:text-gray-900 dark:hover:text-white cursor-pointer transition-colors">Sign in</Link>
               </nav>
             </div>
             <div className="flex items-center space-x-4">
@@ -70,9 +128,9 @@ export default function Home() {
                 </SheetTrigger>
                 <SheetContent className="dark:bg-gray-900">
                   <div className="flex flex-col space-y-6 mt-8">
-                    <a href="#" className="text-lg font-medium hover:text-green-600 transition-colors">Crackla Pro</a>
-                    <a href="#" className="text-lg font-medium hover:text-green-600 transition-colors">Explore</a>
-                    <a href="#" className="text-lg font-medium hover:text-green-600 transition-colors">Become a Seller</a>
+                    <Link href="/crackle-pro" className="text-lg font-medium hover:text-green-600 transition-colors">Crackla Pro</Link>
+                    <Link href="/explore" className="text-lg font-medium hover:text-green-600 transition-colors">Explore</Link>
+                    <Link href="/become-a-seller" className="text-lg font-medium hover:text-green-600 transition-colors">Become a Seller</Link>
                     <hr className="dark:border-gray-700" />
                     <Button variant="ghost" className="justify-start">Sign in</Button>
                     <Button className="bg-green-600 hover:bg-green-700 text-white">Join</Button>
@@ -119,11 +177,13 @@ export default function Home() {
                 "UGC videos",
                 "video editing",
                 "vibe coding"
-              ].map((service, index) => (
-                <div key={service} className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-3 md:px-4 py-2 text-white text-sm border border-white/20 hover:bg-white/20 cursor-pointer transition-colors">
-                  <span className="capitalize whitespace-nowrap">{service}</span>
-                  <ChevronRight className="w-4 h-4 ml-2 flex-shrink-0" />
-                </div>
+              ].map((service) => (
+                <Link key={service} href={`/services/${service.replace(/\s+/g, '-').toLowerCase()}`}>
+                  <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-3 md:px-4 py-2 text-white text-sm border border-white/20 hover:bg-white/20 cursor-pointer transition-colors">
+                    <span className="capitalize whitespace-nowrap">{service}</span>
+                    <ChevronRight className="w-4 h-4 ml-2 flex-shrink-0" />
+                  </div>
+                </Link>
               ))}
             </div>
           </div>
@@ -149,21 +209,13 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="horizontal-scroll">
             <div className="flex space-x-2 md:space-x-4 pb-4 min-w-max">
-              {[
-                { name: "Programming & Tech", icon: "💻" },
-                { name: "Graphics & Design", icon: "🎨" },
-                { name: "Digital Marketing", icon: "📢" },
-                { name: "Writing & Translation", icon: "✍️" },
-                { name: "Video & Animation", icon: "🎬" },
-                { name: "AI Services", icon: "🤖" },
-                { name: "Music & Audio", icon: "🎵" },
-                { name: "Business", icon: "💼" },
-                { name: "Consulting", icon: "🎯" }
-              ].map((category, index) => (
-                <div key={index} className="flex flex-col items-center p-4 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg cursor-pointer transition-colors min-w-[100px] flex-shrink-0">
-                  <div className="text-2xl mb-2">{category.icon}</div>
-                  <span className="text-xs text-center text-gray-700 dark:text-gray-300 leading-tight">{category.name}</span>
-                </div>
+              {categories.map((category, index) => (
+                <Link key={index} href={`/category/${category.name.replace(/\s+/g, '-').toLowerCase()}`}>
+                  <div className="flex flex-col items-center p-4 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg cursor-pointer transition-colors min-w-[100px] flex-shrink-0">
+                    <div className="text-2xl mb-2">{category.icon}</div>
+                    <span className="text-xs text-center text-gray-700 dark:text-gray-300 leading-tight">{category.name}</span>
+                  </div>
+                </Link>
               ))}
             </div>
           </div>
@@ -177,68 +229,46 @@ export default function Home() {
             Popular services
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6">
-            {[
-              {
-                title: "Vibe Coding",
-                image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=300&h=200&fit=crop",
-                bgColor: "bg-pink-500"
-              },
-              {
-                title: "Website Development",
-                image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=300&h=200&fit=crop",
-                bgColor: "bg-green-600"
-              },
-              {
-                title: "Video Editing",
-                image: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=300&h=200&fit=crop",
-                bgColor: "bg-orange-500"
-              },
-              {
-                title: "Software Development",
-                image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=300&h=200&fit=crop",
-                bgColor: "bg-yellow-500"
-              },
-              {
-                title: "SEO",
-                image: "https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?w=300&h=200&fit=crop",
-                bgColor: "bg-green-700"
-              }
-            ].map((service, index) => (
-              <Card key={index} className="overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300 border-0 rounded-lg dark:bg-gray-700 hover:scale-105">
-                <div className={`${service.bgColor} text-white p-4 md:p-6 h-24 md:h-32 flex items-end`}>
-                  <h3 className="text-lg md:text-xl font-medium">{service.title}</h3>
-                </div>
-                <div className="relative h-32 md:h-40">
-                  <Image
-                    src={service.image}
-                    alt={service.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              </Card>
+            {services.map((service, index) => (
+              <Link key={index} href={`/services/${service.title.replace(/\s+/g, '-').toLowerCase()}`}>
+                <Card className="overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300 border-0 rounded-lg dark:bg-gray-700 hover:scale-105">
+                  <div className={`${service.bgColor} text-white p-4 md:p-6 h-24 md:h-32 flex items-end`}>
+                    <h3 className="text-lg md:text-xl font-medium">{service.title}</h3>
+                  </div>
+                  <div className="relative h-32 md:h-40">
+                    <Image
+                      src={service.image}
+                      alt={service.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                </Card>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
       {/* Promotional Banner */}
-      <section className="py-12 md:py-16 bg-gradient-to-r from-pink-500 to-purple-600">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="text-white max-w-md text-center lg:text-left">
-              <h3 className="text-2xl md:text-3xl font-normal mb-4">Stuck at vibe coding?</h3>
-              <p className="text-lg mb-6 text-white/90">Get matched with the right expert to turn your prototype into a real, working product.</p>
-              <Button className="bg-white text-gray-900 hover:bg-gray-100">
-                Find an expert
-              </Button>
-            </div>
-            <div className="hidden lg:block">
-              <div className="w-64 h-40 bg-white/20 rounded-lg backdrop-blur-sm"></div>
+      {promotionalBanner && (
+        <section className="py-12 md:py-16 bg-gradient-to-r from-pink-500 to-purple-600">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+              <div className="text-white max-w-md text-center lg:text-left">
+                <h3 className="text-2xl md:text-3xl font-normal mb-4">{promotionalBanner.title}</h3>
+                <p className="text-lg mb-6 text-white/90">{promotionalBanner.description}</p>
+                <Button className="bg-white text-gray-900 hover:bg-gray-100">
+                  {promotionalBanner.buttonText}
+                </Button>
+              </div>
+              <div className="hidden lg:block">
+                <div className="w-64 h-40 bg-white/20 rounded-lg backdrop-blur-sm"></div>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Crackla Pro Section */}
       <section className="py-12 md:py-16 bg-green-50 dark:bg-gray-900">
@@ -253,45 +283,17 @@ export default function Home() {
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-8">
-              <div className="flex items-start space-x-4">
-                <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center mt-1 flex-shrink-0">
-                  <span className="text-white text-xs">✓</span>
+              {cracklePro.map((pro, index) => (
+                <div key={index} className="flex items-start space-x-4">
+                  <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center mt-1 flex-shrink-0">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-lg mb-2 text-gray-900 dark:text-white">{pro.title}</h4>
+                    <p className="text-gray-600 dark:text-gray-400">{pro.description}</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-semibold text-lg mb-2 text-gray-900 dark:text-white">Dedicated hiring experts</h4>
-                  <p className="text-gray-600 dark:text-gray-400">Count on an account manager to find you the right talent and see to your project's every need.</p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center mt-1 flex-shrink-0">
-                  <span className="text-white text-xs">✓</span>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-lg mb-2 text-gray-900 dark:text-white">Satisfaction guarantee</h4>
-                  <p className="text-gray-600 dark:text-gray-400">Order confidently, with guaranteed refunds for less-than-satisfactory deliveries.</p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center mt-1 flex-shrink-0">
-                  <span className="text-white text-xs">✓</span>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-lg mb-2 text-gray-900 dark:text-white">Advanced management tools</h4>
-                  <p className="text-gray-600 dark:text-gray-400">Seamlessly integrate freelancers into your team and projects.</p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center mt-1 flex-shrink-0">
-                  <span className="text-white text-xs">✓</span>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-lg mb-2 text-gray-900 dark:text-white">Flexible payment models</h4>
-                  <p className="text-gray-600 dark:text-gray-400">Pay per project or opt for hourly rates to facilitate longer-term collaboration.</p>
-                </div>
-              </div>
+              ))}
             </div>
 
             <Button className="bg-gray-900 dark:bg-white dark:text-gray-900 text-white hover:bg-gray-800 dark:hover:bg-gray-100 px-8">
@@ -325,13 +327,7 @@ export default function Home() {
 
           <h3 className="text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-6 md:mb-8">Vontélle's trusted services</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {[
-              { name: "3D Industrial Design", icon: "📐" },
-              { name: "E-commerce Website Development", icon: "🛒" },
-              { name: "Email Marketing", icon: "📧" },
-              { name: "Press Releases", icon: "📰" },
-              { name: "Logo Design", icon: "🎨" }
-            ].map((service, index) => (
+            {successStory.map((service, index) => (
               <div key={index} className="text-center p-4 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg cursor-pointer transition-colors">
                 <div className="text-2xl md:text-3xl mb-2">{service.icon}</div>
                 <p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">{service.name}</p>
