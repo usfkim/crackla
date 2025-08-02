@@ -33,7 +33,7 @@ export default function UserProfileForm() {
           id="email"
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.targe.value)}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
       </div>

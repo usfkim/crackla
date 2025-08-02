@@ -1,25 +1,25 @@
 "use client";
 
-import { useUser } from "@auth0/nextjs-auth0/client";
+import { useAuth } from "@/lib/AuthContext";
 import Link from "next/link";
+import { Button } from "../ui/button";
 
 export default function AuthStatus() {
-  const { user, error, isLoading } = useUser();
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>{error.message}</div>;
+  const { user, logout } = useAuth();
 
   return (
     <div>
       {user ? (
-        <div>
-          <span>{user.name}</span>
-          <a href="/api/auth/logout">Logout</a>
+        <div className="flex items-center space-x-4">
+          <span>Welcome, {user.name}</span>
+          <Button onClick={logout} variant="ghost">
+            Logout
+          </Button>
         </div>
       ) : (
-        <div>
-          <Link href="/api/auth/login">Login</Link>
-          <Link href="/api/auth/signup">Sign Up</Link>
+        <div className="flex items-center space-x-4">
+          <Link href="/auth/login">Login</Link>
+          <Link href="/auth/signup">Sign Up</Link>
         </div>
       )}
     </div>

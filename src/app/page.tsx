@@ -4,11 +4,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Search, Menu, ChevronRight } from "lucide-react";
+import { Search, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import HomeNav from "@/components/layout/HomeNav";
 
 interface Service {
   title: string;
@@ -65,7 +65,7 @@ export default function Home() {
           fetch('/api/services'),
           fetch('/api/category'),
           fetch('/api/crackle-pro'),
-          fetch('/api/succes-story'),
+          fetch('/api/success-story'),
           fetch('/api/Promotional-Banner')
         ]);
 
@@ -104,39 +104,7 @@ export default function Home() {
                 </div>
                 <Badge className="bg-red-500 text-white text-xs px-2 py-0.5">Uganda</Badge>
               </div>
-              <nav className="hidden lg:flex items-center space-x-6 text-gray-600 dark:text-gray-300">
-                <Link href="/crackle-pro" className="flex items-center space-x-1 hover:text-green-600 dark:hover:text-green-400 cursor-pointer transition-colors">
-                  <span>Crackla Pro</span>
-                </Link>
-                <Link href="/explore" className="hover:text-gray-900 dark:hover:text-white cursor-pointer transition-colors">Explore</Link>
-                <span className="hover:text-gray-900 dark:hover:text-white cursor-pointer transition-colors">English</span>
-                <Link href="/become-a-seller" className="hover:text-gray-900 dark:hover:text-white cursor-pointer transition-colors">Become a Seller</Link>
-                <Link href="/signin" className="hover:text-gray-900 dark:hover:text-white cursor-pointer transition-colors">Sign in</Link>
-              </nav>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button className="bg-green-600 hover:bg-green-700 text-white hidden md:inline-flex">
-                Join
-              </Button>
-
-              {/* Mobile Menu */}
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="lg:hidden">
-                    <Menu className="h-5 w-5" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent className="dark:bg-gray-900">
-                  <div className="flex flex-col space-y-6 mt-8">
-                    <Link href="/crackle-pro" className="text-lg font-medium hover:text-green-600 transition-colors">Crackla Pro</Link>
-                    <Link href="/explore" className="text-lg font-medium hover:text-green-600 transition-colors">Explore</Link>
-                    <Link href="/become-a-seller" className="text-lg font-medium hover:text-green-600 transition-colors">Become a Seller</Link>
-                    <hr className="dark:border-gray-700" />
-                    <Button variant="ghost" className="justify-start">Sign in</Button>
-                    <Button className="bg-green-600 hover:bg-green-700 text-white">Join</Button>
-                  </div>
-                </SheetContent>
-              </Sheet>
+              <HomeNav />
             </div>
           </div>
         </div>
