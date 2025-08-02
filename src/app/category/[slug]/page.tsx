@@ -3,12 +3,6 @@ import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-interface PageProps {
-  params: {
-    slug: string;
-  };
-}
-
 interface Service {
   title: string;
   image: string;
@@ -48,7 +42,7 @@ async function getCategoryServices(category: string): Promise<Service[]> {
   return services;
 }
 
-export default async function CategoryPage({ params }: PageProps) {
+export default async function CategoryPage({ params }: { params: { slug: string } }) {
   const services = await getCategoryServices(params.slug);
   const categoryName = params.slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
