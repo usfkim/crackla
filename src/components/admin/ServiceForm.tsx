@@ -6,7 +6,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 
-export default function ServiceForm({ service }: { service?: any }) {
+interface Service {
+  name: string;
+  description: string;
+  price: number | string;
+  category: string;
+}
+
+export default function ServiceForm({ service }: { service?: Service }) {
   const [name, setName] = useState(service?.name || "");
   const [description, setDescription] = useState(service?.description || "");
   const [price, setPrice] = useState(service?.price || "");
