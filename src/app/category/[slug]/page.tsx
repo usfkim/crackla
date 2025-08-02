@@ -42,9 +42,10 @@ async function getCategoryServices(category: string): Promise<Service[]> {
   return services;
 }
 
-export default async function CategoryPage({ params }: { params: { slug: string } }) {
-  const services = await getCategoryServices(params.slug);
-  const categoryName = params.slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const services = await getCategoryServices(slug);
+  const categoryName = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
   return (
     <div className="container mx-auto px-4 py-8">

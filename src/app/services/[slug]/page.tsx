@@ -36,8 +36,9 @@ async function getServiceDetails(slug: string): Promise<Service> {
   };
 }
 
-export default async function ServicePage({ params }: { params: { slug: string } }) {
-  const service = await getServiceDetails(params.slug);
+export default async function ServicePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const service = await getServiceDetails(slug);
 
   return (
     <div className="container mx-auto px-4 py-8">
